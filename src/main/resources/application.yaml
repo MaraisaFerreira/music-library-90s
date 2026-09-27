@@ -1,3 +1,23 @@
 spring:
   application:
     name: music-library-90s
+  config:
+    import: "optional:file:./db_credentials.yaml"
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:${prod.db-name}}
+    username: "${DB_USERNAME:${prod.username}}"
+    password: "${DB_PASSWORD:${prod.password}}"
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  profiles:
+    active: dev
+  jackson:
+    default-property-inclusion: NON_EMPTY
+
+
+logging:
+  level:
+    root: warn
