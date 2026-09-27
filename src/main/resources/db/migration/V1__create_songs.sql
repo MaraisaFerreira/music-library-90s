@@ -3,9 +3,9 @@ CREATE TABLE songs (
        name VARCHAR(150) NOT NULL,
        release_year INTEGER NOT NULL,
        artist VARCHAR(150) NOT NULL,
-       album VARCHAR(100) NOT NULL,
+       album VARCHAR(150) NOT NULL,
        track INT,
-       lyric TEXT,
+       lyrics TEXT,
 
        CONSTRAINT ch_valid_release
            CHECK (release_year BETWEEN 1990 AND 1999),
