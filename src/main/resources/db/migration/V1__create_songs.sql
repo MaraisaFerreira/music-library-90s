@@ -4,6 +4,7 @@ CREATE TABLE songs (
        release_year INTEGER NOT NULL,
        artist VARCHAR(150) NOT NULL,
        album VARCHAR(150) NOT NULL,
+       cover_album_url VARCHAR(500),
        track INT,
        lyrics TEXT,
 

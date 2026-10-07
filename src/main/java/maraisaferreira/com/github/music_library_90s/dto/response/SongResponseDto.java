@@ -7,6 +7,7 @@ public record SongResponseDto(
         Integer release,
         String artist,
         String album,
+        String coverAlbumUrl,
         Integer track,
         String lyrics
 ) {
@@ -16,6 +17,7 @@ public record SongResponseDto(
                 song.getRelease_year(),
                 song.getArtist(),
                 song.getAlbum(),
+                song.getCoverAlbumUrl(),
                 song.getTrack(),
                 song.getLyrics()
         );

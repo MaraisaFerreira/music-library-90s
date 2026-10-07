@@ -36,6 +36,9 @@ public class Song {
     @Column(nullable = false, length = 150)
     private String album;
 
+    @Column(length = 500)
+    private String coverAlbumUrl;
+
     private Integer track;
 
     @Column(columnDefinition = "TEXT")
