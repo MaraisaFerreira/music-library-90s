@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name", "album"})
@@ -43,4 +42,13 @@ public class Song {
 
     @Column(columnDefinition = "TEXT")
     private String lyrics;
+
+    public Song(Long id, String name, Integer release_year, String artist, String album, Integer track) {
+        this.id = id;
+        this.name = name;
+        this.release_year = release_year;
+        this.artist = artist;
+        this.album = album;
+        this.track = track;
+    }
 }

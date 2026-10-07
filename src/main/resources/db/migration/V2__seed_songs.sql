@@ -1,6 +1,7 @@
 INSERT INTO songs (name, release_year, artist, album, track) VALUES
      ('Wannabe', 1996, 'Spice Girls', 'Spice', 1),
      ('Say You''ll Be There', 1996, 'Spice Girls', 'Spice', 2),
+     ('Stop', 1997, 'Spice Girls', 'Spiceworld', 2),
      ('2 Become 1', 1996, 'Spice Girls', 'Spice', 3),
      ('Spice Up Your Life', 1997, 'Spice Girls', 'Spiceworld', 1),
      ('Smells Like Teen Spirit', 1991, 'Nirvana', 'Nevermind', 1),
