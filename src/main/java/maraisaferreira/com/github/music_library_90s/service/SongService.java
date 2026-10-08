@@ -8,19 +8,21 @@ import maraisaferreira.com.github.music_library_90s.model.Song;
 import maraisaferreira.com.github.music_library_90s.repositories.SongRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Service
 public class SongService {
 
     private final SongRepository songRepository;
 
-    public SongResponseDto findSongById(Long id) {
+    public SongResponseDto findSongById(UUID id) {
         return new SongResponseDto(songRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(GlobalMessages.RESOURCE_NOT_FOUND + id)));
     }
 
-    public void deleteSong(Long id) {
+    public void deleteSong(UUID id) {
         Song song = songRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(GlobalMessages.RESOURCE_NOT_FOUND + id));
