@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -18,14 +21,14 @@ import lombok.*;
 )
 public class Song {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Min(value = 1990, message = "The lowest year allowed is 1990.")
-    @Max(value = 1990, message = "The biggest year allowed is 1999.")
+    @Min(value = 1990, message = GlobalMessages.LOWEST_YEAR_ALLOWED)
+    @Max(value = 1990, message = GlobalMessages.BIGGER_YEAR_ALLOWED)
     @Column(nullable = false)
     private Integer release_year;
 
@@ -38,12 +41,15 @@ public class Song {
     @Column(length = 500)
     private String coverAlbumUrl;
 
+    @Min(value = 0, message = GlobalMessages.LOWEST_TRACK_VALUE)
+    @Max(value = 255, message = GlobalMessages.BIGGER_TRACK_VALUE)
     private Integer track;
 
     @Column(columnDefinition = "TEXT")
     private String lyrics;
 
-    public Song(Long id, String name, Integer release_year, String artist, String album, Integer track) {
+    public Song(UUID id, String name, Integer release_year, String artist,
+                String album, Integer track) {
         this.id = id;
         this.name = name;
         this.release_year = release_year;
