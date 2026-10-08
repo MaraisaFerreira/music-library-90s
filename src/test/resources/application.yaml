@@ -13,8 +13,11 @@ spring:
         format_sql: true
   flyway:
     clean-disabled: false
+    locations: classpath:db/migration,classpath:db/test-migration
 
 
 logging:
   level:
     root: warn
+    maraisaferreira.com.github: info
+    org.flywaydb: info
