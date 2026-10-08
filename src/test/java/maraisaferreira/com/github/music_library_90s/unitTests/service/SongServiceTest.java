@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,43 +29,49 @@ class SongServiceTest {
     @InjectMocks
     private SongService songService;
 
+    private static final String UUID_STR = "00cca7f6-43eb-4e28-aefa-ae45e92e88a4";
+    private UUID uuidTest;
+
     @BeforeEach
     void setUp() {
+        uuidTest = UUID.fromString(UUID_STR);
     }
 
 
     @Test
     void findSongByIdTest() {
-        when(songRepository.findById(1L)).thenReturn(Optional.of(getSingleSong()));
+        UUID uuid = UUID.fromString(UUID_STR);
+        when(songRepository.findById(uuid)).thenReturn(Optional.of(getSingleSong()));
 
-        SongResponseDto responseDto = songService.findSongById(1L);
+        SongResponseDto responseDto = songService.findSongById(uuid);
 
         assertNotNull(responseDto);
         assertEquals("Stop", responseDto.name());
         assertEquals(1997, responseDto.release());
         assertEquals("Spice Girls", responseDto.artist());
         assertEquals("Spiceworld", responseDto.album());
-        assertEquals(2, responseDto.track());
+        assertEquals((short) 2, responseDto.track());
     }
 
     @Test
     void findSongByIdExceptionTest() {
         Exception ex = assertThrows(ResourceNotFoundException.class, () -> {
-            when(songRepository.findById(anyLong())).thenReturn(Optional.empty());
-            songService.findSongById(1L);
+            when(songRepository.findById(any())).thenReturn(Optional.empty());
+            songService.findSongById(uuidTest);
         });
 
         assertInstanceOf(ResourceNotFoundException.class, ex);
-        assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + "1", ex.getMessage());
+        assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + UUID_STR, ex.getMessage());
     }
 
     @Test
     void deleteSongTest() {
-        when(songRepository.findById(1L)).thenReturn(Optional.of(getSingleSong()));
 
-        songService.deleteSong(1L);
+        when(songRepository.findById(uuidTest)).thenReturn(Optional.of(getSingleSong()));
 
-        verify(songRepository, times(1)).findById(anyLong());
+        songService.deleteSong(uuidTest);
+
+        verify(songRepository, times(1)).findById(any());
         verify(songRepository, times(1)).delete(any(Song.class));
         verifyNoMoreInteractions(songRepository);
     }
@@ -72,17 +79,17 @@ class SongServiceTest {
     @Test
     void deleteSongExceptionTest() {
         Exception ex = assertThrows(ResourceNotFoundException.class, () -> {
-            when(songRepository.findById(anyLong())).thenReturn(Optional.empty());
-            songService.findSongById(1L);
+            when(songRepository.findById(any())).thenReturn(Optional.empty());
+            songService.findSongById(uuidTest);
         });
 
         assertInstanceOf(ResourceNotFoundException.class, ex);
-        assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + "1", ex.getMessage());
+        assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + UUID_STR, ex.getMessage());
     }
 
     private Song getSingleSong(){
         return new Song(
-                1L,
+                UUID.randomUUID(),
                 "Stop",
                 1997,
                 "Spice Girls",
