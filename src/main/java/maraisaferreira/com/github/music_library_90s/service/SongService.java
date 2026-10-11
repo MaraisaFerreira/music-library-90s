@@ -2,10 +2,13 @@ package maraisaferreira.com.github.music_library_90s.service;
 
 import lombok.RequiredArgsConstructor;
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+import maraisaferreira.com.github.music_library_90s.dto.response.PageResponseDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.SongResponseDto;
 import maraisaferreira.com.github.music_library_90s.exceptions.ResourceNotFoundException;
 import maraisaferreira.com.github.music_library_90s.model.Song;
 import maraisaferreira.com.github.music_library_90s.repositories.SongRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -15,6 +18,12 @@ import java.util.UUID;
 public class SongService {
 
     private final SongRepository songRepository;
+
+    public PageResponseDto<SongResponseDto> findAllSongs(Pageable pageable){
+        Page<Song> songPage = songRepository.findAll(pageable);
+        Page<SongResponseDto> dtoPage = songPage.map(SongResponseDto::new);
+        return new PageResponseDto<>(dtoPage);
+    }
 
     public SongResponseDto findSongById(UUID id) {
         return new SongResponseDto(songRepository.findById(id)
