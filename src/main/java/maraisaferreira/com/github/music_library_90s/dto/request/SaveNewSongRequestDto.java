@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
 
-public record AddNewSongRequestDto(
+public record SaveNewSongRequestDto(
         @NotBlank(message = GlobalMessages.NOT_BLANK_FIELD)
         String name,
 

@@ -11,6 +11,7 @@ public final class GlobalMessages {
     public static final String BIGGER_YEAR_ALLOWED = "The bigger year allowed is 1999.";
     public static final String LOWEST_TRACK_VALUE = "The lowest value allowed is 0.";
     public static final String BIGGER_TRACK_VALUE = "The bigger value allowed is 255.";
+    public static final String RESOURCE_ALREADY_EXIST = "This song already exist on database.";
 
     private GlobalMessages() {
     }
