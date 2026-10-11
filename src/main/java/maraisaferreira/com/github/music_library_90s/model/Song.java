@@ -28,7 +28,7 @@ public class Song {
     private String name;
 
     @Min(value = 1990, message = GlobalMessages.LOWEST_YEAR_ALLOWED)
-    @Max(value = 1990, message = GlobalMessages.BIGGER_YEAR_ALLOWED)
+    @Max(value = 1999, message = GlobalMessages.BIGGER_YEAR_ALLOWED)
     @Column(nullable = false)
     private Integer release_year;
 
@@ -51,6 +51,14 @@ public class Song {
     public Song(UUID id, String name, Integer release_year, String artist,
                 String album, Integer track) {
         this.id = id;
+        this.name = name;
+        this.release_year = release_year;
+        this.artist = artist;
+        this.album = album;
+        this.track = track;
+    }
+
+    public Song(String name, Integer release_year, String artist, String album, Integer track) {
         this.name = name;
         this.release_year = release_year;
         this.artist = artist;
