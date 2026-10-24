@@ -1,19 +1,25 @@
 package maraisaferreira.com.github.music_library_90s.unitTests.service;
 
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+import maraisaferreira.com.github.music_library_90s.dto.response.PageResponseDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.SongResponseDto;
 import maraisaferreira.com.github.music_library_90s.exceptions.ResourceNotFoundException;
 import maraisaferreira.com.github.music_library_90s.model.Song;
 import maraisaferreira.com.github.music_library_90s.repositories.SongRepository;
 import maraisaferreira.com.github.music_library_90s.service.SongService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,6 +43,22 @@ class SongServiceTest {
         uuidTest = UUID.fromString(UUID_STR);
     }
 
+    @Test
+    void findAllSongsTest() {
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<Song> songPage = new PageImpl<>(getSongList(), pageable, pageable.getPageSize());
+
+        when(songRepository.findAll(pageable)).thenReturn(songPage);
+
+        PageResponseDto<SongResponseDto> pageResponseDto = songService.findAllSongs(pageable);
+
+        List<SongResponseDto> expectedList = getSongList().stream()
+                .map(SongResponseDto::new).toList();
+
+        assertNotNull(pageResponseDto);
+        assertEquals(expectedList.size(), pageResponseDto.content().size());
+        assertEquals(expectedList, pageResponseDto.content());
+    }
 
     @Test
     void findSongByIdTest() {
@@ -89,11 +111,27 @@ class SongServiceTest {
 
     private Song getSingleSong(){
         return new Song(
-                UUID.randomUUID(),
                 "Stop",
                 1997,
                 "Spice Girls",
                 "Spiceworld",
                 2);
+    }
+
+    private List<Song> getSongList() {
+        List<Song> songList = new ArrayList<>();
+
+        for (int i = 0; i < 4; i++) {
+            int number = i + 1;
+            songList.add(new Song(
+                    "Stop_" + number,
+                    1997,
+                    "Spice Girls",
+                    "Spiceworld",
+                    2)
+            );
+        }
+
+        return songList;
     }
 }
