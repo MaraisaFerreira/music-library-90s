@@ -86,6 +86,47 @@ class SongServiceTest {
 
         assertInstanceOf(ResourceNotFoundException.class, ex);
         assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + UUID_STR, ex.getMessage());
+
+        verify(songRepository, times(1)).findById(any());
+        verifyNoMoreInteractions(songRepository);
+    }
+
+    @Test
+    void findSongByArtistTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Song> songList = List.of(
+                new Song(UUID.randomUUID(), "Stop", 1997, "Spice Girls", "Spiceworld", 2),
+                new Song(UUID.randomUUID(), "Wannabe", 1996, "Spice Girls", "Spice", 1));
+        Page<Song> songPage = new PageImpl<>(songList, pageable, pageable.getPageSize());
+        when(songRepository.findSongByArtist("Spice Girls", pageable))
+                .thenReturn(songPage);
+
+        PageResponseDto<SongResponseDto> responseDtoPage = songService.findSongsByArtist("Spice Girls", pageable);
+
+        assertNotNull(responseDtoPage);
+        assertEquals(songList.size(), responseDtoPage.content().size());
+
+        assertEquals(songList.stream().map(SongResponseDto::new).toList(),
+                responseDtoPage.content());
+    }
+
+    @Test
+    void findSongByAlbumTest() {
+        Pageable pageable = PageRequest.of(0, 2);
+        List<Song> songList = List.of(
+                new Song(UUID.randomUUID(), "Stop", 1997, "Spice Girls", "Spiceworld", 2),
+                new Song(UUID.randomUUID(), "Viva Forever", 1997, "Spice Girls", "Spiceworld", 9));
+        Page<Song> songPage = new PageImpl<>(songList, pageable, pageable.getPageSize());
+        when(songRepository.findSongByAlbum("Spiceworld", pageable))
+                .thenReturn(songPage);
+
+        PageResponseDto<SongResponseDto> responseDtoPage = songService.findSongsByAlbum("Spiceworld", pageable);
+
+        assertNotNull(responseDtoPage);
+        assertEquals(songList.size(), responseDtoPage.content().size());
+
+        assertEquals(songList.stream().map(SongResponseDto::new).toList(),
+                responseDtoPage.content());
     }
 
     @Test
@@ -117,6 +158,10 @@ class SongServiceTest {
 
         assertInstanceOf(BadRequestException.class, ex);
         assertEquals(GlobalMessages.RESOURCE_ALREADY_EXIST, ex.getMessage());
+
+        verify(songRepository, times(1))
+                .existsByNameAndAlbum(anyString(), anyString());
+        verifyNoMoreInteractions(songRepository);
     }
 
     @Test
@@ -140,6 +185,9 @@ class SongServiceTest {
 
         assertInstanceOf(ResourceNotFoundException.class, ex);
         assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + UUID_STR, ex.getMessage());
+
+        verify(songRepository, times(1)).findById(any());
+        verifyNoMoreInteractions(songRepository);
     }
 
     private Song getSingleSong(){
