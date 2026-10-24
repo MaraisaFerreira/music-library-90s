@@ -1,11 +1,13 @@
 package maraisaferreira.com.github.music_library_90s.integrationTests.controller;
 
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+import maraisaferreira.com.github.music_library_90s.dto.response.PageResponseDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.SongResponseDto;
 import maraisaferreira.com.github.music_library_90s.exceptions.ResourceNotFoundException;
 import maraisaferreira.com.github.music_library_90s.integrationTests.AbstractIntegrationTest;
@@ -21,8 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SongControllerJsonResponseTest extends AbstractIntegrationTest {
 
@@ -53,6 +54,30 @@ class SongControllerJsonResponseTest extends AbstractIntegrationTest {
         flyway.clean();
         flyway.migrate();
     }
+
+    @Test
+    void findAllSongsTest() {
+        PageResponseDto<SongResponseDto> pageResponseDto = given(specification)
+                .when().get("/songs")
+                .then().statusCode(HttpStatus.OK.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract().body().as(new TypeRef<PageResponseDto<SongResponseDto>>() {
+                });
+
+        assertNotNull(pageResponseDto);
+        assertEquals(4, pageResponseDto.content().size());
+        assertEquals(4, pageResponseDto.totalElements());
+        assertEquals(0, pageResponseDto.page());
+
+        List<SongResponseDto> expectedList = getDatabaseExpectedList();
+
+        var receivedList = pageResponseDto.content();
+
+        assertTrue(receivedList.containsAll(expectedList));
+        assertEquals(expectedList.size(), receivedList.size());
+    }
+
+
 
     @Test
     void findSongByIdTest() {
@@ -99,5 +124,18 @@ class SongControllerJsonResponseTest extends AbstractIntegrationTest {
                 .then().statusCode(HttpStatus.NOT_FOUND.value())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract().body().as(ResourceNotFoundException.class);
+    }
+
+    private static List<SongResponseDto> getDatabaseExpectedList() {
+        return List.of(
+                new SongResponseDto(UUID.fromString("e42b7c09-51af-46d3-8e78-9a2f64c1b507"), "2 Become 1", 1996,
+                        "Spice Girls", "Spice", null, 3, null),
+                new SongResponseDto(UUID.fromString("c19e5a74-2d63-48bf-a731-5f902ce84d16"), "Say You'll Be There", 1996,
+                        "Spice Girls", "Spice", null, 2, null),
+                new SongResponseDto(UUID.fromString("a6d8f241-93bc-4e57-b0c6-17e529fa83d2"), "Stop", 1997, "Spice Girls",
+                        "Spiceworld", null, 2, null),
+                new SongResponseDto(UUID.fromString("7f3a2c91-6b84-4d17-9e52-c8a41f6b203d"), "Viva Forever", 1997,
+                        "Spice Girls", "Spiceworld", null, 9, null)
+                );
     }
 }
