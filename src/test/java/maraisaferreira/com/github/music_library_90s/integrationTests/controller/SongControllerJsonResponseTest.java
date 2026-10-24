@@ -109,6 +109,41 @@ class SongControllerJsonResponseTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void findSongsByArtistTest() {
+        var songsPage = given(specification)
+                .pathParam("artist", "Spice Girls")
+                .when().get("/songs/artist/{artist}")
+                .then().statusCode(HttpStatus.OK.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract().body().as(new TypeRef<PageResponseDto<SongResponseDto>>() {});
+
+        var expectedList = getDatabaseExpectedList();
+
+        assertNotNull(songsPage);
+        assertEquals(expectedList.size(), songsPage.content().size());
+
+        assertTrue(expectedList.containsAll(songsPage.content()));
+    }
+
+    @Test
+    void findSongsByAlbumTest() {
+        var songsPage = given(specification)
+                .pathParam("album", "Spice")
+                .when().get("/songs/album/{album}")
+                .then().statusCode(HttpStatus.OK.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract().body().as(new TypeRef<PageResponseDto<SongResponseDto>>() {});
+
+        var expectedList = getDatabaseExpectedList().stream().filter(song ->
+                song.album().equalsIgnoreCase("Spice")).toList();
+
+        assertNotNull(songsPage);
+        assertEquals(expectedList.size(), songsPage.content().size());
+
+        assertTrue(expectedList.containsAll(songsPage.content()));
+    }
+
+    @Test
     void saveNewSongTest() {
         var responseDto = given(specification)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
