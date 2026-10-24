@@ -36,6 +36,20 @@ public class SongService {
     }
 
     @Transactional(readOnly = true)
+    public PageResponseDto<SongResponseDto> findSongsByArtist(String artist, Pageable pageable){
+        Page<Song> songPage = songRepository.findSongByArtist(artist, pageable);
+        Page<SongResponseDto> dtoPage = songPage.map(SongResponseDto::new);
+        return new PageResponseDto<>(dtoPage);
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponseDto<SongResponseDto> findSongsByAlbum(String album, Pageable pageable){
+        Page<Song> songPage = songRepository.findSongByAlbum(album, pageable);
+        Page<SongResponseDto> dtoPage = songPage.map(SongResponseDto::new);
+        return new PageResponseDto<>(dtoPage);
+    }
+
+    @Transactional(readOnly = true)
     public SongResponseDto findSongById(UUID id) {
         return new SongResponseDto(songRepository.findById(id)
                 .orElseThrow(() ->

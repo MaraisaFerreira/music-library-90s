@@ -28,6 +28,22 @@ public class SongController {
         return ResponseEntity.ok(songService.findAllSongs(pageable));
     }
 
+    @GetMapping("/artist/{artist}")
+    public ResponseEntity<PageResponseDto<SongResponseDto>> findSongsByArtist(
+            @PathVariable String artist,
+            @PageableDefault(sort = {"name"}) Pageable pageable
+    ) {
+        return ResponseEntity.ok(songService.findSongsByArtist(artist, pageable));
+    }
+
+    @GetMapping("/album/{album}")
+    public ResponseEntity<PageResponseDto<SongResponseDto>> findSongsByAlbum(
+            @PathVariable String album,
+            @PageableDefault(sort = {"name"}) Pageable pageable
+    ) {
+        return ResponseEntity.ok(songService.findSongsByAlbum(album, pageable));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SongResponseDto> findSongById(@PathVariable UUID id){
         return ResponseEntity.ok(songService.findSongById(id));
