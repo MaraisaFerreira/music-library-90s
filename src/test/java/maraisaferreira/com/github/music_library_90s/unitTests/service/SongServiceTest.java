@@ -1,8 +1,10 @@
 package maraisaferreira.com.github.music_library_90s.unitTests.service;
 
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+import maraisaferreira.com.github.music_library_90s.dto.request.SaveNewSongRequestDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.PageResponseDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.SongResponseDto;
+import maraisaferreira.com.github.music_library_90s.exceptions.BadRequestException;
 import maraisaferreira.com.github.music_library_90s.exceptions.ResourceNotFoundException;
 import maraisaferreira.com.github.music_library_90s.model.Song;
 import maraisaferreira.com.github.music_library_90s.repositories.SongRepository;
@@ -84,6 +86,37 @@ class SongServiceTest {
 
         assertInstanceOf(ResourceNotFoundException.class, ex);
         assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + UUID_STR, ex.getMessage());
+    }
+
+    @Test
+    void saveNewSongTest() {
+        Song saved = getSingleSong();
+        UUID uuid = UUID.randomUUID();
+        saved.setId(uuid);
+        when(songRepository.save(getSingleSong())).thenReturn(saved);
+
+        SongResponseDto responseDto = songService.saveNewSong(new SaveNewSongRequestDto(
+                "Stop", 1997, "Spice Girls", "Spiceworld", 2));
+
+        assertNotNull(responseDto);
+        assertEquals(uuid, responseDto.id());
+        assertEquals("Stop", responseDto.name());
+        assertEquals(1997, responseDto.release());
+        assertEquals("Spice Girls", responseDto.artist());
+        assertEquals("Spiceworld", responseDto.album());
+        assertEquals(2, responseDto.track());
+    }
+
+    @Test
+    void saveNewSongExceptionTest(){
+        when(songRepository.existsByNameAndAlbum("Stop", "Spiceworld")).thenReturn(true);
+
+        Exception ex = assertThrows(BadRequestException.class, () -> {
+            songService.saveNewSong(new SaveNewSongRequestDto("Stop", 1997, "Spice Girls", "Spiceworld", 2));
+        });
+
+        assertInstanceOf(BadRequestException.class, ex);
+        assertEquals(GlobalMessages.RESOURCE_ALREADY_EXIST, ex.getMessage());
     }
 
     @Test
