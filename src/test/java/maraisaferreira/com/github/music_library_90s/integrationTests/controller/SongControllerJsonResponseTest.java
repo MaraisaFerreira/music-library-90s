@@ -7,8 +7,10 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import maraisaferreira.com.github.music_library_90s.contants.GlobalMessages;
+import maraisaferreira.com.github.music_library_90s.dto.request.SaveNewSongRequestDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.PageResponseDto;
 import maraisaferreira.com.github.music_library_90s.dto.response.SongResponseDto;
+import maraisaferreira.com.github.music_library_90s.exceptions.BadRequestException;
 import maraisaferreira.com.github.music_library_90s.exceptions.ResourceNotFoundException;
 import maraisaferreira.com.github.music_library_90s.integrationTests.AbstractIntegrationTest;
 import org.flywaydb.core.Flyway;
@@ -77,8 +79,6 @@ class SongControllerJsonResponseTest extends AbstractIntegrationTest {
         assertEquals(expectedList.size(), receivedList.size());
     }
 
-
-
     @Test
     void findSongByIdTest() {
 
@@ -106,6 +106,43 @@ class SongControllerJsonResponseTest extends AbstractIntegrationTest {
 
         assertNotNull(exception);
         assertEquals(GlobalMessages.RESOURCE_NOT_FOUND + INVALID_UUID , exception.getMessage());
+    }
+
+    @Test
+    void saveNewSongTest() {
+        var responseDto = given(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new SaveNewSongRequestDto(
+                        "Wannabe", 1996, "Spice Girls", "Spice", 1))
+                .when().post("/songs")
+                .then().statusCode(HttpStatus.CREATED.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract().body().as(SongResponseDto.class);
+
+        assertNotNull(responseDto);
+        assertNotNull(responseDto.id());
+        assertNotNull(responseDto.lyrics());
+        assertEquals("Wannabe", responseDto.name());
+        assertEquals("Spice Girls", responseDto.artist());
+        assertEquals("Spice", responseDto.album());
+        assertEquals(1996, responseDto.release());
+
+    }
+
+    @Test
+    void saveNewSongExceptionTest(){
+        var ex = given(specification)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(new SaveNewSongRequestDto(
+                        "Stop", 1997, "Spice Girls", "Spiceworld", 1))
+                .when().post("/songs")
+                .then().statusCode(HttpStatus.BAD_REQUEST.value())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .extract().body().as(BadRequestException.class);
+
+        assertNotNull(ex);
+        assertInstanceOf(BadRequestException.class, ex);
+        assertEquals(GlobalMessages.RESOURCE_ALREADY_EXIST, ex.getMessage());
     }
 
     @Test
